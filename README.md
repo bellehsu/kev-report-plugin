@@ -8,10 +8,10 @@
 
 ```
 /plugin marketplace add bellehsu/kev-report-plugin
-/plugin install kev-report@bellehsu-plugins
+/plugin install kev-report@kev-report-plugin
 ```
 
-或用指令列：`claude plugin marketplace add bellehsu/kev-report-plugin && claude plugin install kev-report@bellehsu-plugins`
+或用指令列：`claude plugin marketplace add bellehsu/kev-report-plugin && claude plugin install kev-report@kev-report-plugin`
 
 ## 怎麼用
 
