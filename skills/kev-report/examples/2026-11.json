@@ -1,0 +1,402 @@
+{
+ "range_start": "2026-11-01",
+ "range_end": "2026-11-25",
+ "catalog_version": "2026.11.25",
+ "report_date": "2026-11-26",
+ "summary": [
+  "KEV（Known Exploited Vulnerabilities）只收錄<b>已確認被實際攻擊利用</b>的漏洞。版本落在受影響範圍、而且設備對外開放時，修補之後還要檢查 log，看有沒有異常登入、新增帳號、不明檔案或排程。",
+  "<b>Synology DSM（CVE-2024-10441）</b>是本月唯一標註「已被勒索軟體利用」的項目，公司有 Synology NAS 的話請優先確認。",
+  "本月<b>邊界設備</b>比例很高：SonicWall SSLVPN、Check Point、Barracuda、Cisco Expressway、Juniper SSR、Mitel MiCollab（5 筆）。對外服務請優先處理。",
+  "<b>沒有修補可用</b>（已停止維護）：Apache Axis 1.x、Idunno AntiCsrf，只能移除或替換，請列入汰換計畫。",
+  "建議處理順序：① 盤點公司實際有用的產品 → ② 對外暴露的設備優先 → ③ 內部伺服器與用戶端 → ④ 用 log 和 IoC 確認是否已經被入侵。"
+ ],
+ "notes": [
+  "SonicWall 公告頁無法自動讀取，該筆的修補版本請以原廠 SNWLID-2026-0014 為準。"
+ ],
+ "sections": [
+  {
+   "title": "一、一般企業常見設備與軟體（建議優先處理）",
+   "rows": [
+    {
+     "date": "2026/11/18",
+     "cves": [
+      "CVE-2024-10441"
+     ],
+     "product": "Synology DSM / BeeStation (BSM)",
+     "vuln_type": "輸出編碼不當，可遠端執行程式碼",
+     "check": "DSM：控制台 → 資訊中心 → DSM 版本。\n受影響：7.2.2 < 7.2.2-72806-1、7.2.1 < 7.2.1-69057-6、7.2 < 7.2-64570-4、7.1 < 7.1.1-42962-7；BSM < 1.1-65374",
+     "fix": "控制台 → 更新與還原，更新到上述版本或更新版。\nNAS 管理介面不要直接對外，改走 VPN。",
+     "ransomware": true
+    },
+    {
+     "date": "2026/11/20",
+     "cves": [
+      "CVE-2026-123890"
+     ],
+     "product": "VMware vCenter",
+     "vuln_type": "認證繞過（VMware Directory Service），不需登入",
+     "check": "vSphere Client → 說明 → 關於，或 https://<vcenter>:5480 查版本。\n受影響：9.1.x、9.0.x、8.0、5.x（另含 Telco Cloud Platform／Infrastructure）",
+     "fix": "升級到 9.1.1.0200、9.0.2.0200、8.0 U3m、5.2.5。\n限制 vCenter 只允許管理網段連線。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/10",
+     "cves": [
+      "CVE-2026-124194"
+     ],
+     "product": "Microsoft Office Outlook",
+     "vuln_type": "危險動作缺少使用者確認（偽冒）",
+     "check": "Outlook → 檔案 → Office 帳戶 → 關於。\n受影響：LTSC 2021 < 16.0.14334.21048、LTSC 2024 < 16.0.17932.21140；M365 Apps 依 11 月更新通道",
+     "fix": "套用 2026/11 Patch Tuesday 的 Office 更新；用 WSUS／Intune 確認已派送到全公司。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/10",
+     "cves": [
+      "CVE-2026-125350"
+     ],
+     "product": "Google Chromium（Chrome、Edge、Opera 等）",
+     "vuln_type": "Use-After-Free（XML 元件），開啟惡意網頁就可能被執行程式碼",
+     "check": "chrome://settings/help 查版本，< 157.0.8103.50 受影響；Edge 用 edge://settings/help。",
+     "fix": "更新瀏覽器並重新啟動；Edge 也要一起更新。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/06",
+     "cves": [
+      "CVE-2026-19868"
+     ],
+     "product": "SonicWall SonicOS SSLVPN",
+     "vuln_type": "單一因素認證，可繞過 SAML／MFA",
+     "check": "Device → Settings → Firmware。\n受影響：SonicOS 7.3.3-7015（含）以前、8.2.2-8015（含）以前。\n只有 SSLVPN 啟用 SAML 認證、同時開著其他登入方式時才會中。",
+     "fix": "依原廠公告 SNWLID-2026-0014 升級（修補版本請以原廠頁面為準）。\n修補前先關閉 SSLVPN 上 SAML 以外的登入方式。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/13",
+     "cves": [
+      "CVE-2026-123039"
+     ],
+     "product": "Check Point Quantum Security Gateway / Management",
+     "vuln_type": "關鍵資源權限設定錯誤（本機提權到 root）",
+     "check": "Gaia CLI 執行 cpinfo -y all 看 Jumbo Take。\n受影響：R81.20 Take <= 173、R82 Take <= 130、R82.10 Take <= 50、R82.20 Take <= 10",
+     "fix": "安裝更新的 Jumbo Hotfix（參考 sk1000362）。\n攻擊者要先能登入本機，請一併檢查 Gaia 帳號。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/10",
+     "cves": [
+      "CVE-2026-111560"
+     ],
+     "product": "Barracuda ESG、Load Balancer ADC、WAF、WSG、BMA、WCC",
+     "vuln_type": "OS 指令注入（時區欄位，以 root 執行）",
+     "check": "管理介面查韌體。受影響：ESG <= 9.4.0.27、ADC <= 6.4.0、WAF <= 11.0.1、WSG <= 16.1.100.100、BMA <= 5.5.4.0、WCC <= 2.2.1",
+     "fix": "升級到高於上列的版本。\n可以和 CVE-2026-116606 串起來利用，修補後檢查設定是否遭竄改。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/10",
+     "cves": [
+      "CVE-2026-116606"
+     ],
+     "product": "Barracuda Email Security Gateway (ESG)",
+     "vuln_type": "經替代路徑繞過認證（未登入就能匯入設定）",
+     "check": "管理介面查韌體，< 9.4.0.030 受影響。",
+     "fix": "升級到 9.4.0.030 以上，並檢查全域設定是否被改過。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/09",
+     "cves": [
+      "CVE-2026-123158"
+     ],
+     "product": "OpenSSH（Linux + musl libc、未用 PAM）",
+     "vuln_type": "非預期回傳值，可繞過密碼認證",
+     "check": "ssh -V，< 10.6p2 才可能受影響；用 ldd $(which sshd) 檢查是否用 musl。\n主要影響 Alpine、部分網通設備和容器。一般 Ubuntu／RHEL（glibc + PAM）不受影響。",
+     "fix": "升級到 OpenSSH 10.6p2 或發行版的修補套件。\n暫時措施：設 PasswordAuthentication no，改用金鑰登入。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/20",
+     "cves": [
+      "CVE-2026-76466"
+     ],
+     "product": "Cisco Expressway（-C / -E）",
+     "vuln_type": "寫死的帳密，可遠端以 root 執行指令（CVSS 9.8）",
+     "check": "Web 介面 Status → Overview 查版本；System → Clustering 看是否有組叢集。\n只有組成叢集的設備才受影響。",
+     "fix": "X15.5.3 以前請升級到 X15.5.20；X14 以前要先遷移到有修補的版本。原廠表示沒有暫時措施。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/25",
+     "cves": [
+      "CVE-2026-103406"
+     ],
+     "product": "Juniper Session Smart Router / Conductor（HPE）",
+     "vuln_type": "OS 指令注入（salt minion ID），可以 root 執行",
+     "check": "查 Conductor 版本。受影響：< 7.0.5、7.1.0–7.1.6、7.2.0–7.2.2",
+     "fix": "升級到 7.0.5、7.1.7、7.2.3 以上。原廠表示沒有暫時措施。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/25",
+     "cves": [
+      "CVE-2026-133275",
+      "CVE-2026-133303",
+      "CVE-2026-133311",
+      "CVE-2026-133323",
+      "CVE-2026-133324"
+     ],
+     "product": "Mitel MiCollab（AWV 視訊會議元件）",
+     "vuln_type": "任意檔案上傳、XML 注入、弱認證、OS 指令注入（CVSS 10.0）、認證繞過",
+     "check": "查 MiCollab 版本，10.3（10.3.0.18）以前全部受影響。",
+     "fix": "升級到 10.3.0.18 後套用原廠修補程式（KB000129195），或升級到更新的版本。\n暫時措施：封鎖外部連到 AWV 元件。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/04",
+     "cves": [
+      "CVE-2024-27834"
+     ],
+     "product": "Apple iOS／iPadOS／macOS／Safari／tvOS／watchOS",
+     "vuln_type": "認證不當（繞過 Pointer Authentication）",
+     "check": "受影響：iOS／iPadOS < 17.5 或 < 16.7.8、macOS < 14.5、Safari < 17.5、tvOS < 17.5、watchOS < 10.5",
+     "fix": "更新作業系統。這是 2024 年的漏洞，用 MDM 篩出還停在舊版的設備即可。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/23",
+     "cves": [
+      "CVE-2026-134624"
+     ],
+     "product": "N-able MailAssure（SpamExperts）",
+     "vuln_type": "SSRF（LDAP 同步連線檢查）",
+     "check": "版本早於 20261121.1943 受影響。N-able 代管的雲端部分由原廠處理；自架的要自己確認。",
+     "fix": "更新到 20261121.1943 以上，並檢查 API 使用者帳號。",
+     "ransomware": false
+    }
+   ]
+  },
+  {
+   "title": "二、網站、伺服器與開發元件",
+   "rows": [
+    {
+     "date": "2026/11/03",
+     "cves": [
+      "CVE-2026-119977"
+     ],
+     "product": "WordPress Core",
+     "vuln_type": "TOCTOU 競態條件，在核心升級期間可遠端執行程式碼",
+     "check": "後台 → 儀表板 → 更新，或執行 wp core version。\n4.7 到 7.1.3 都受影響（各分支到最新的修補版之前）。",
+     "fix": "升級到 7.1.4，舊分支升級到各自最新的修補版。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/24",
+     "cves": [
+      "CVE-2026-132165"
+     ],
+     "product": "Drupal Core",
+     "vuln_type": "安全失效處理不當，可經由 install.php 重新安裝、接管網站或執行程式碼",
+     "check": "後台 → 報表 → 狀態報告，或執行 drush status。\nCVE 記錄列出受影響：10.6.22、11.3.22、11.4.13 以前",
+     "fix": "依 SA-CORE-2026-017 升級。\n暫時措施：用 Web 伺服器設定封鎖 /core/install.php。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/17",
+     "cves": [
+      "CVE-2026-115731"
+     ],
+     "product": "Perforce Puppet Enterprise",
+     "vuln_type": "不受信任資料反序列化（報表處理），可執行程式碼",
+     "check": "cat /opt/puppetlabs/server/pe_version。\n受影響：2023.8.0–2023.8.12、2025.0.0 – < 2025.12.1、2026.0.0",
+     "fix": "升級到 2023.8.13、2025.12.1 或 2026.0.1，然後重新啟動 puppet server。\n關閉 CA 的自動簽發憑證（autosign）。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/18",
+     "cves": [
+      "CVE-2026-90436"
+     ],
+     "product": "Apache Axis 1.x（已停止維護）",
+     "vuln_type": "不安全的反射（SOAP fault），可遠端執行程式碼",
+     "check": "find / -name \"axis*.jar\"，找到 axis-1.4.jar 之類的就是。\n舊的 Java ERP、中介軟體常內嵌這個元件。",
+     "fix": "沒有修補。請移除，或改用 Axis2 等仍有維護的替代方案。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/20",
+     "cves": [
+      "CVE-2026-129448"
+     ],
+     "product": "Apache Roller",
+     "vuln_type": "不受信任資料反序列化（XML-RPC），不需登入",
+     "check": "查版本，4.0.0–6.1.5 受影響。",
+     "fix": "升級到 6.1.6 以上，或關閉 XML-RPC 端點。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/25",
+     "cves": [
+      "CVE-2026-133469"
+     ],
+     "product": "Vates Xen Orchestra",
+     "vuln_type": "輸入型別驗證不當，可繞過認證取得管理員權限",
+     "check": "XO 介面查版本。受影響：< 6.9.2、6.10.0；xo-server < 5.211.2、5.213.0",
+     "fix": "升級到 6.9.2 或 6.10.1 以上。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/09",
+     "cves": [
+      "CVE-2026-123218"
+     ],
+     "product": "IBM Aspera Faspex",
+     "vuln_type": "授權錯誤，一般使用者可提權成管理員",
+     "check": "受影響：5.0.0–5.0.19。",
+     "fix": "升級到 5.0.19 PL1，確認 faspex-core 容器映像是 5.0.19（Fix Pack 1）。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/24",
+     "cves": [
+      "CVE-2026-131914"
+     ],
+     "product": "Idunno AntiCsrf（.NET 套件，已停止維護）",
+     "vuln_type": "不受信任資料反序列化，可遠端執行程式碼",
+     "check": "在原始碼的 packages.config／*.csproj 搜尋 Idunno.AntiCsrf。受影響：<= 0.9.1 Beta",
+     "fix": "沒有修補。請移除，改用 ASP.NET 內建的防偽（AntiForgery）機制。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/24",
+     "cves": [
+      "CVE-2026-132224"
+     ],
+     "product": "Optimizely Web Experimentation（SaaS）",
+     "vuln_type": "關鍵狀態資料可被外部控制，可冒充使用者並竄改 Project JavaScript",
+     "check": "網站有用 Optimizely 才需要處理。",
+     "fix": "原廠 2026/11/17 已修補。請檢查 Project JavaScript 有沒有被植入不明程式碼，並檢查帳號成員。",
+     "ransomware": false
+    }
+   ]
+  },
+  {
+   "title": "三、AI、VoIP、OT 與特定產業",
+   "rows": [
+    {
+     "date": "2026/11/18",
+     "cves": [
+      "CVE-2026-40217"
+     ],
+     "product": "BerriAI LiteLLM",
+     "vuln_type": "未保護的替代通道，可透過 /guardrails/test_custom_code 執行程式碼",
+     "check": "pip show litellm，1.81.8 – < 1.83.10 受影響。",
+     "fix": "升級到 1.83.10 以上；不要讓該端點能從外部存取。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/09",
+     "cves": [
+      "CVE-2026-102895"
+     ],
+     "product": "GPUStack",
+     "vuln_type": "認證不當，不需登入就能取得管理員權限",
+     "check": "受影響：< 2.2.0（已知有 2.1.1 被攻擊的案例）。",
+     "fix": "升級到 2.2.0；修補前把 force_auth_localhost 設為 true。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/23",
+     "cves": [
+      "CVE-2026-133968"
+     ],
+     "product": "Project MONAI Label",
+     "vuln_type": "路徑穿越，可寫入任意檔案或執行程式碼",
+     "check": "pip show monailabel，< 0.8.6 受影響。",
+     "fix": "升級到 0.8.6。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/09",
+     "cves": [
+      "CVE-2026-116779"
+     ],
+     "product": "SignalWire FreeSWITCH",
+     "vuln_type": "程式碼注入（SIP MESSAGE），可執行指令",
+     "check": "fs_cli -x version，< 1.11.3 受影響（預設設定就能被利用）。",
+     "fix": "升級到 1.11.3。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/13",
+     "cves": [
+      "CVE-2026-114713"
+     ],
+     "product": "UnrealIRCd",
+     "vuln_type": "分隔符號處理不當，可注入伺服器間指令",
+     "check": "受影響：6.0.0 – < 6.2.7.1，且有連結兩台以上伺服器的網路。",
+     "fix": "升級到 6.2.7.1，或執行 ./unrealircd hot-patch bundle-20261107。\n暫時措施：在設定檔加入 blacklist-module \"labeled-response\";",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/25",
+     "cves": [
+      "CVE-2025-41450",
+      "CVE-2023-25914",
+      "CVE-2023-25915"
+     ],
+     "product": "Danfoss AK-SM 800A 系列（冷凍／空調監控 OT）",
+     "vuln_type": "認證不當、路徑穿越、輸入驗證不當（可執行指令）",
+     "check": "Web 介面查韌體：< 3.3 三個漏洞都中；< 4.2 會中 CVE-2025-41450。",
+     "fix": "升級到 4.2 以上；OT 設備不要直接連上網際網路。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/20",
+     "cves": [
+      "CVE-2025-42884"
+     ],
+     "product": "SAP NetWeaver Enterprise Portal",
+     "vuln_type": "查詢邏輯特殊字元處理不當（JNDI 注入）",
+     "check": "受影響：EP-BASIS 7.50、EP-RUNTIME 7.50。",
+     "fix": "套用 SAP Note 3660969。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/10",
+     "cves": [
+      "CVE-2026-20320"
+     ],
+     "product": "Cisco BroadWorks",
+     "vuln_type": "XML 外部實體（XXE），不需登入就能讀取設定檔",
+     "check": "受影響：低於 RI.2026.07，與設定無關。",
+     "fix": "升級到 RI.2026.07。原廠表示沒有暫時措施。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/10",
+     "cves": [
+      "CVE-2026-111793"
+     ],
+     "product": "Openwave Webtop Media Transcoder",
+     "vuln_type": "資源跨域傳遞不當（可轉換未允許的檔案類型）",
+     "check": "受影響：< 1.1.22.0。",
+     "fix": "升級到 1.1.22.0。",
+     "ransomware": false
+    },
+    {
+     "date": "2026/11/18",
+     "cves": [
+      "CVE-2026-90817"
+     ],
+     "product": "Vanderbilt REDCap",
+     "vuln_type": "程式碼注入，不需登入就能執行程式碼",
+     "check": "查 REDCap 版本（需要知道一個有效的公開問卷 hash 才能利用）。",
+     "fix": "升級到 16.0.49 LTS、17.3.10 LTS 或 17.4.4。",
+     "ransomware": false
+    }
+   ]
+  }
+ ]
+}

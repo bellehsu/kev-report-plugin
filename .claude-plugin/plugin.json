@@ -1,0 +1,8 @@
+{
+  "name": "kev-report",
+  "version": "1.0.0",
+  "description": "產生 CISA KEV（已遭實際利用漏洞）的繁體中文 PDF 處理報告：每筆列出怎麼確認、怎麼修正，可加浮水印。",
+  "author": { "name": "bellehsu" },
+  "license": "Apache-2.0",
+  "keywords": ["security", "cve", "kev", "cisa", "pdf", "report"]
+}
