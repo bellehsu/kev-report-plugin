@@ -1,0 +1,16 @@
+{
+  "name": "bellehsu-plugins",
+  "owner": {
+    "name": "bellehsu"
+  },
+  "description": "bellehsu 的 Claude Code plugins：CISA KEV 漏洞處理報告等資安工具。",
+  "plugins": [
+    {
+      "name": "kev-report",
+      "source": "./",
+      "description": "產生 CISA KEV（已遭實際利用漏洞）的繁體中文 PDF 處理報告：每筆列出怎麼確認、怎麼修正，可加浮水印。",
+      "version": "1.0.0",
+      "license": "Apache-2.0"
+    }
+  ]
+}

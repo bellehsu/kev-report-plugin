@@ -2,6 +2,17 @@
 
 把 CISA「已知遭利用漏洞（KEV）」清單中，指定月份或日期區間新增的 CVE，整理成繁體中文 PDF 報告（A4 橫式）。每筆列出：KEV 公告日、CVE、產品、漏洞類型、**怎麼確認**、**怎麼修正**，並依「一般企業設備／網站與伺服器元件／AI、VoIP、OT」分類，標出勒索軟體利用與已停止維護的項目。
 
+## 安裝
+
+在 Claude Code 執行：
+
+```
+/plugin marketplace add bellehsu/kev-report-plugin
+/plugin install kev-report@bellehsu-plugins
+```
+
+或用指令列：`claude plugin marketplace add bellehsu/kev-report-plugin && claude plugin install kev-report@bellehsu-plugins`
+
 ## 怎麼用
 
 安裝後在 Claude Code 直接用中文問即可，例如：
